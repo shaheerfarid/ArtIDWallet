@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap">
-  <link rel="stylesheet" href="resale.css?v=14">
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="resale.css?v=16">
   <script src="https://cdn.jsdelivr.net/npm/qrcode@1.4.4/build/qrcode.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jsqr/dist/jsQR.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/ethers@6.13.5/dist/ethers.umd.min.js"></script>
@@ -30,9 +31,9 @@
       </span>
     </button>
     <div class="rs-topbar-actions">
-      <span class="rs-demo-badge"><span aria-hidden="true"></span> Demo · payment simulation · qBESU</span>
-      <button class="rs-topbtn rs-back-portal" id="backBtn" type="button" hidden>&larr; Portal</button>
-      <button class="rs-topbtn" id="lockWalletBtn" type="button" hidden>Lock all wallets</button>
+      <span class="rs-demo-badge" title="Demo · payment simulation · qBESU"><span aria-hidden="true"></span><span>Demo<span class="rs-wide-only"> · payment simulation · qBESU</span></span></span>
+      <button class="rs-topbtn rs-back-portal" id="backBtn" type="button" aria-label="Back to portal" hidden>&larr;<span class="rs-wide-only"> Portal</span></button>
+      <button class="rs-topbtn" id="lockWalletBtn" type="button" hidden>Lock<span class="rs-wide-only"> all wallets</span></button>
       <button class="rs-topbtn" id="rsReset" type="button">Reset</button>
     </div>
   </header>
@@ -43,13 +44,21 @@
     <!-- ===================== PORTAL ===================== -->
     <section class="rs-view" id="portalView">
       <div class="rs-portal">
-        <h1>Cross Border Art ID Registry and Resale Service</h1>
-        <p>Artists and collectors register identities and artwork records on qBESU. Resale payment remains a local demo simulation; ownership changes only after an ERC-721 ID Token transfer is confirmed.</p>
+        <header class="rs-portal-head">
+          <p class="rs-route"><span class="rs-route-gba">China GBA</span><span class="rs-route-arrow" aria-hidden="true">&rarr;</span><span class="rs-route-hk">Hong Kong</span></p>
+          <h1>Cross Border Art ID Registry</h1>
+          <p>GBA artists send each ArtID across the border over the Astron (星火鏈) data channel, so Hong Kong collectors see the same registry in real time. Resale payment is a demo simulation; ownership changes only after an ERC-721 ID Token transfer is confirmed on qBESU.</p>
+        </header>
         <div class="rs-portal-grid">
-          <article class="rs-portal-wallet is-locked" id="alicePortalCard">
-            <span class="rs-portal-avatar">A</span>
-            <strong>Artist Alice Wallet</strong>
-            <span class="rs-portal-description" id="aliceConnectionState">Wallet locked <span class="rs-portal-status-icon" id="aliceLockIcon" aria-label="Wallet locked">🔒</span></span>
+          <article class="rs-portal-wallet rs-side-gba is-locked" id="alicePortalCard">
+            <div class="rs-wallet-top">
+              <span class="rs-portal-avatar">A</span>
+              <div class="rs-wallet-id">
+                <strong>Artist Alice Wallet</strong>
+                <span class="rs-portal-description" id="aliceConnectionState">Wallet locked <span class="rs-portal-status-icon" id="aliceLockIcon" aria-label="Wallet locked">🔒</span></span>
+              </div>
+              <span class="rs-region">China GBA</span>
+            </div>
             <form id="alicePinForm" class="rs-pin-form">
               <label for="aliceWalletPin">ICCHSM wallet PIN</label>
               <div class="rs-pin-row">
@@ -59,20 +68,33 @@
             </form>
             <button class="rs-topbtn rs-open-wallet" id="aliceOpenBtn" type="button" disabled>Open Artist Alice Wallet</button>
           </article>
-          <article class="rs-portal-wallet is-unlocked rs-registry-card">
-            <span class="rs-portal-avatar registry">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M4 7h16M4 12h16M4 17h16"/>
-              </svg>
-            </span>
-            <strong>Art ID Registry</strong>
-            <span class="rs-portal-description">Registered artworks and collectors</span>
+
+          <div class="rs-sync-link from-gba" aria-hidden="true"><i></i></div>
+
+          <article class="rs-registry-card">
+            <span class="rs-hub-signal" aria-hidden="true"></span>
+            <span class="rs-hub-tag">Astron 星火鏈 cross-border channel</span>
+            <strong>ArtID Registry</strong>
+            <span class="rs-sync-live is-syncing"><i aria-hidden="true"></i><span data-sync="state">Connecting to qBESU…</span></span>
+            <dl class="rs-sync-stats">
+              <div><dt>Artworks</dt><dd data-sync="artworks">&mdash;</dd></div>
+              <div><dt>Collectors</dt><dd data-sync="collectors">&mdash;</dd></div>
+              <div><dt>Last sync</dt><dd data-sync="time">&mdash;</dd></div>
+            </dl>
             <button class="rs-topbtn rs-open-registry" id="openRegistryBtn" type="button">Open Registry</button>
           </article>
-          <article class="rs-portal-wallet is-locked" id="bobPortalCard">
-            <span class="rs-portal-avatar buyer">B</span>
-            <strong>Collector Bob Wallet</strong>
-            <span class="rs-portal-description" id="bobConnectionState">Wallet locked <span class="rs-portal-status-icon" id="bobLockIcon" aria-label="Wallet locked">🔒</span></span>
+
+          <div class="rs-sync-link to-hk" aria-hidden="true"><i></i></div>
+
+          <article class="rs-portal-wallet rs-side-hk is-locked" id="bobPortalCard">
+            <div class="rs-wallet-top">
+              <span class="rs-portal-avatar">B</span>
+              <div class="rs-wallet-id">
+                <strong>Collector Bob Wallet</strong>
+                <span class="rs-portal-description" id="bobConnectionState">Wallet locked <span class="rs-portal-status-icon" id="bobLockIcon" aria-label="Wallet locked">🔒</span></span>
+              </div>
+              <span class="rs-region">Hong Kong</span>
+            </div>
             <form id="bobPinForm" class="rs-pin-form">
               <label for="bobWalletPin">ICCHSM wallet PIN</label>
               <div class="rs-pin-row">
@@ -86,19 +108,27 @@
       </div>
     </section>
 
-    <!-- ===================== ARTIST ALICE ===================== -->
+    <!-- ===================== ARTIST ALICE (China GBA) ===================== -->
     <section class="rs-view" id="aliceView" hidden>
       <div class="rs-idcard">
-        <span class="rs-idcard-avatar">A</span>
-        <div class="rs-idcard-body">
-          <strong>Artist Alice</strong>
-          <dl>
-            <div><dt>EOA</dt><dd id="aliceEoa">&mdash;</dd></div>
-            <div><dt>DID</dt><dd id="aliceDid">&mdash;</dd></div>
-          </dl>
+        <div class="rs-idcard-head">
+          <span class="rs-idcard-avatar">A</span>
+          <div class="rs-idcard-name">
+            <strong>Artist Alice</strong>
+            <span class="rs-region">China GBA</span>
+          </div>
           <span class="rs-listing-status" id="aliceListingStatus"></span>
+        </div>
+        <dl>
+          <div><dt>EOA</dt><dd id="aliceEoa">&mdash;</dd></div>
+          <div><dt>DID</dt><dd id="aliceDid">&mdash;</dd></div>
+        </dl>
+        <div class="rs-idcard-form">
+          <div class="rs-field">
+            <label for="aliceDisplayName">Collector display name</label>
+            <input class="input-field" id="aliceDisplayName" maxlength="80" value="Artist Alice">
+          </div>
           <button class="rs-topbtn" id="aliceRegister" type="button">Register collector</button>
-          <input class="input-field" id="aliceDisplayName" maxlength="80" value="Artist Alice" aria-label="Artist Alice collector display name">
           <div class="rs-metadata-entry" id="aliceMetadataEntry" hidden>
             <input class="input-field" id="aliceMetadataURI" maxlength="512" placeholder="Collector metadata URI" aria-label="Artist Alice metadata URI">
             <button class="rs-topbtn" id="aliceSaveMetadata" type="button">Save metadata</button>
@@ -108,67 +138,108 @@
         </div>
       </div>
 
-      <div id="aliceUnlistedNotice" class="rs-unlisted-notice" hidden>Artist Alice is unlisted. Other wallet actions are inactive; use the listing control above to relist.</div>
+      <div id="aliceUnlistedNotice" class="rs-unlisted-notice" hidden>Artist Alice is unlisted. Other wallet actions are inactive; use the listing control on the ID card to relist.</div>
       <div id="aliceWalletActions" class="rs-wallet-actions">
-      <section class="rs-pane">
-        <div class="rs-pane-body">
-          <div class="rs-label">Create artwork data on qBESU</div>
-          <div class="rs-price-row">
-            <input class="input-field" id="artworkIdInput" maxlength="96" placeholder="Artwork ID (e.g. did:art:artwork:<keccak256 title>)">
-            <input class="input-field" id="artworkTitleInput" maxlength="120" placeholder="Title">
-            <input class="input-field" id="artworkArtistInput" maxlength="120" placeholder="Artist">
-            <select class="input-field" id="creatorProfile" aria-label="Artwork creator">
-              <option value="alice">Create as Artist Alice</option>
-              <option value="bob">Create as Collector Bob</option>
-            </select>
-          </div>
-          <div class="rs-price-row">
-            <input class="input-field" id="artworkImageInput" maxlength="512" placeholder="Image URI (optional https:// or ipfs://)">
-            <input class="input-field" id="artworkHashInput" maxlength="128" placeholder="Content hash (optional)">
-            <button class="rs-topbtn" id="previewArtworkBtn" type="button">Preview</button>
-            <button class="btn-primary" id="createArtworkBtn" type="button" style="width:auto;margin:0;padding:12px 18px;">Create artwork data</button>
-          </div>
-          <p class="rs-hint">Each record deploys its own ERC-721 ID Token contract and mints token 1 to the registered collector. Contract creation is a qBESU transaction.</p>
-        </div>
-      </section>
-
-      <section class="rs-pane">
-        <div class="rs-pane-body">
-          <div class="rs-collection-head">
-            <div>
-              <div class="rs-label">ERC-721 ID Token Artwork Folder</div>
+        <section class="rs-pane">
+          <div class="rs-pane-head">
+            <span class="rs-avatar is-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </span>
+            <div class="rs-who">
+              <strong>Artwork folder</strong>
+              <span>ERC-721 ID Tokens · tap one to sell it</span>
             </div>
           </div>
-          <div class="rs-collection" id="collection"></div>
-        </div>
-      </section>
-
-      <section class="rs-pane">
-        <div class="rs-pane-head">
-          <div class="rs-avatar">A</div>
-          <div class="rs-who">
-            <strong>Resale payment code</strong>
+          <div class="rs-pane-body">
+            <div class="rs-collection" id="collection"></div>
           </div>
-          <span class="rs-role">Artist</span>
-        </div>
-        <div class="rs-pane-body" id="sellerListing"></div>
-      </section>
+        </section>
+
+        <section class="rs-pane" id="sellerPane">
+          <div class="rs-pane-head">
+            <span class="rs-avatar is-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M17 21h4v-4"/></svg>
+            </span>
+            <div class="rs-who">
+              <strong>Resale payment code</strong>
+              <span>Send it to the Hong Kong buyer</span>
+            </div>
+            <span class="rs-role">Artist</span>
+          </div>
+          <div class="rs-pane-body" id="sellerListing"></div>
+        </section>
+
+        <section class="rs-pane">
+          <div class="rs-pane-head">
+            <span class="rs-avatar is-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            </span>
+            <div class="rs-who">
+              <strong>Register new artwork</strong>
+              <span>Deploys an ERC-721 ID Token on qBESU</span>
+            </div>
+          </div>
+          <div class="rs-pane-body">
+            <div class="rs-form-grid">
+              <div class="rs-field rs-span-2">
+                <label for="artworkIdInput">Artwork ID</label>
+                <input class="input-field" id="artworkIdInput" maxlength="96" placeholder="did:art:artwork:<keccak256 title>">
+              </div>
+              <div class="rs-field">
+                <label for="artworkTitleInput">Title</label>
+                <input class="input-field" id="artworkTitleInput" maxlength="120" placeholder="Title">
+              </div>
+              <div class="rs-field">
+                <label for="artworkArtistInput">Artist</label>
+                <input class="input-field" id="artworkArtistInput" maxlength="120" placeholder="Artist">
+              </div>
+              <div class="rs-field rs-span-2">
+                <label for="artworkImageInput">Image URI <span class="rs-optional">(optional)</span></label>
+                <input class="input-field" id="artworkImageInput" maxlength="512" placeholder="https:// or ipfs://">
+              </div>
+              <div class="rs-field">
+                <label for="artworkHashInput">Content hash <span class="rs-optional">(optional)</span></label>
+                <input class="input-field" id="artworkHashInput" maxlength="128" placeholder="0x…">
+              </div>
+              <div class="rs-field">
+                <label for="creatorProfile">Create as</label>
+                <select class="input-field" id="creatorProfile">
+                  <option value="alice">Artist Alice</option>
+                  <option value="bob">Collector Bob</option>
+                </select>
+              </div>
+            </div>
+            <div class="rs-actions">
+              <button class="rs-topbtn" id="previewArtworkBtn" type="button">Preview</button>
+              <button class="btn-primary" id="createArtworkBtn" type="button">Create artwork data</button>
+            </div>
+            <p class="rs-hint">Each record deploys its own ERC-721 ID Token contract and mints token 1 to the registered collector. Contract creation is a qBESU transaction.</p>
+          </div>
+        </section>
       </div>
     </section>
 
-    <!-- ===================== COLLECTOR BOB ===================== -->
+    <!-- ===================== COLLECTOR BOB (Hong Kong) ===================== -->
     <section class="rs-view" id="bobView" hidden>
       <div class="rs-idcard">
-        <span class="rs-idcard-avatar buyer">B</span>
-        <div class="rs-idcard-body">
-          <strong>Collector Bob</strong>
-          <dl>
-            <div><dt>EOA</dt><dd id="bobEoa">&mdash;</dd></div>
-            <div><dt>DID</dt><dd id="bobDid">&mdash;</dd></div>
-          </dl>
+        <div class="rs-idcard-head">
+          <span class="rs-idcard-avatar">B</span>
+          <div class="rs-idcard-name">
+            <strong>Collector Bob</strong>
+            <span class="rs-region">Hong Kong</span>
+          </div>
           <span class="rs-listing-status" id="bobListingStatus"></span>
+        </div>
+        <dl>
+          <div><dt>EOA</dt><dd id="bobEoa">&mdash;</dd></div>
+          <div><dt>DID</dt><dd id="bobDid">&mdash;</dd></div>
+        </dl>
+        <div class="rs-idcard-form">
+          <div class="rs-field">
+            <label for="bobDisplayName">Collector display name</label>
+            <input class="input-field" id="bobDisplayName" maxlength="80" value="Collector Bob">
+          </div>
           <button class="rs-topbtn" id="bobRegister" type="button">Register collector</button>
-          <input class="input-field" id="bobDisplayName" maxlength="80" value="Collector Bob" aria-label="Collector Bob display name">
           <div class="rs-metadata-entry" id="bobMetadataEntry" hidden>
             <input class="input-field" id="bobMetadataURI" maxlength="512" placeholder="Collector metadata URI" aria-label="Collector Bob metadata URI">
             <button class="rs-topbtn" id="bobSaveMetadata" type="button">Save metadata</button>
@@ -178,42 +249,64 @@
         </div>
       </div>
 
-      <div id="bobUnlistedNotice" class="rs-unlisted-notice" hidden>Collector Bob is unlisted. Other wallet actions are inactive; use the listing control above to relist.</div>
+      <div id="bobUnlistedNotice" class="rs-unlisted-notice" hidden>Collector Bob is unlisted. Other wallet actions are inactive; use the listing control on the ID card to relist.</div>
       <div id="bobWalletActions" class="rs-wallet-actions">
-      <section class="rs-pane">
-        <div class="rs-pane-body">
-          <div class="rs-collection-head">
-            <div>
-              <div class="rs-label">ERC-721 ID Token Artwork Folder</div>
+        <section class="rs-pane">
+          <div class="rs-pane-head">
+            <span class="rs-avatar is-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><path d="M14 14h3v3h-3zM21 14v.01M14 21h.01M17 21h4v-4"/></svg>
+            </span>
+            <div class="rs-who">
+              <strong>Buy with a payment code</strong>
+              <span>From a GBA artist's resale listing</span>
+            </div>
+            <span class="rs-role">Collector</span>
+          </div>
+          <div class="rs-pane-body" id="buyerBody"></div>
+        </section>
+
+        <section class="rs-pane">
+          <div class="rs-pane-head">
+            <span class="rs-avatar is-icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            </span>
+            <div class="rs-who">
+              <strong>Artwork folder</strong>
+              <span>ERC-721 ID Tokens owned in Hong Kong</span>
             </div>
           </div>
-          <div class="rs-collection" id="bobFolder"></div>
-        </div>
-      </section>
-
-      <section class="rs-pane">
-        <div class="rs-pane-head">
-          <div class="rs-avatar buyer">B</div>
-          <div class="rs-who">
-            <strong>Load resale payment code</strong>
+          <div class="rs-pane-body">
+            <div class="rs-collection" id="bobFolder"></div>
           </div>
-          <span class="rs-role buyer">Collector</span>
-        </div>
-        <div class="rs-pane-body" id="buyerBody"></div>
-      </section>
+        </section>
       </div>
     </section>
 
     <!-- ===================== REGISTRY ===================== -->
     <section class="rs-view" id="registryView" hidden>
+      <section class="rs-registry-hero">
+        <span class="rs-hub-signal" aria-hidden="true"></span>
+        <div class="rs-registry-hero-text">
+          <p class="rs-route"><span class="rs-route-gba">China GBA</span><span class="rs-route-arrow" aria-hidden="true">&rarr;</span><span class="rs-route-hk">Hong Kong</span></p>
+          <h2>ArtID Registry</h2>
+          <span class="rs-sync-live is-syncing"><i aria-hidden="true"></i><span data-sync="state">Connecting to qBESU…</span></span>
+        </div>
+        <dl class="rs-sync-stats">
+          <div><dt>Artworks</dt><dd data-sync="artworks">&mdash;</dd></div>
+          <div><dt>Collectors</dt><dd data-sync="collectors">&mdash;</dd></div>
+          <div><dt>Last sync</dt><dd data-sync="time">&mdash;</dd></div>
+        </dl>
+        <button class="rs-topbtn" id="refreshChainBtn" type="button">Refresh from qBESU</button>
+      </section>
+
       <section class="rs-pane">
+        <div class="rs-pane-head">
+          <span class="rs-avatar is-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="9" cy="8.5" r="1.5"/></svg>
+          </span>
+          <div class="rs-who"><strong>Registered artworks</strong></div>
+        </div>
         <div class="rs-pane-body">
-          <div class="rs-collection-head">
-            <div>
-              <div class="rs-label">Registered artworks</div>
-            </div>
-            <button class="rs-topbtn" id="refreshChainBtn" type="button">Refresh from qBESU</button>
-          </div>
           <div class="rs-table-scroll">
             <table class="rs-regtable">
               <thead>
@@ -226,8 +319,13 @@
       </section>
 
       <section class="rs-pane">
+        <div class="rs-pane-head">
+          <span class="rs-avatar is-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.5"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0M16 4.5a3.5 3.5 0 0 1 0 7M18 14.5a6.5 6.5 0 0 1 3.5 5.5"/></svg>
+          </span>
+          <div class="rs-who"><strong>Registered collectors</strong></div>
+        </div>
         <div class="rs-pane-body">
-          <div class="rs-label">Registered collectors</div>
           <div class="rs-table-scroll">
             <table class="rs-regtable">
               <thead><tr><th>Collector</th><th>EOA</th><th>Collector DID</th><th>Listing</th><th>Action</th><th>Transaction</th></tr></thead>
@@ -237,21 +335,24 @@
         </div>
       </section>
 
-      <section class="rs-ledger">
-        <div class="rs-ledger-head">
-          <div>
-            <div class="rs-label">Transfer log</div>
-          </div>
+      <section class="rs-pane">
+        <div class="rs-pane-head">
+          <span class="rs-avatar is-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h15l-4-4M20 16H5l4 4"/></svg>
+          </span>
+          <div class="rs-who"><strong>Transfer log</strong></div>
         </div>
-        <div class="rs-table-scroll">
-          <table>
-            <thead>
-              <tr><th>Time</th><th>Piece</th><th>From</th><th>To</th><th>Channel</th><th>Reference</th></tr>
-            </thead>
-            <tbody id="ledgerBody">
-              <tr><td colspan="6" class="rs-ledger-empty">No transfers yet.</td></tr>
-            </tbody>
-          </table>
+        <div class="rs-pane-body">
+          <div class="rs-table-scroll">
+            <table class="rs-regtable">
+              <thead>
+                <tr><th>Time</th><th>Piece</th><th>From</th><th>To</th><th>Channel</th><th>Reference</th></tr>
+              </thead>
+              <tbody id="ledgerBody">
+                <tr><td colspan="6" class="rs-ledger-empty">No transfers yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
     </section>
@@ -440,7 +541,19 @@
       return;
     }
     el.innerHTML = '';
-    owned.forEach(p => el.appendChild(folderTile(p, null)));
+    owned.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'rs-folder-item';
+      item.appendChild(folderTile(p, null));
+      const back = document.createElement('button');
+      back.type = 'button';
+      back.className = 'rs-topbtn';
+      back.textContent = state.returning === p.erc721 ? 'Returning…' : 'Return to Artist Alice';
+      back.disabled = Boolean(state.returning);
+      back.addEventListener('click', () => returnToArtist(p));
+      item.appendChild(back);
+      el.appendChild(item);
+    });
   }
 
   /* ---------------- seller ---------------- */
@@ -453,6 +566,10 @@
     state.stage = 'idle';
     renderCollection();
     renderSellerListing();
+    // on a phone the listing pane sits below the folder, out of view
+    if (window.matchMedia('(max-width: 999px)').matches) {
+      $('sellerPane').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
   }
 
   function renderSellerListing() {
@@ -463,20 +580,26 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <rect x="3" y="3" width="18" height="18" rx="2.5"/><path d="m3 16 5-5 4 4 3-3 6 6"/><circle cx="9" cy="8.5" r="1.5"/>
           </svg>
-          <div class="rs-hint">Pick a piece above to list it for sale.</div>
+          <div class="rs-hint">Pick a piece from your artwork folder to list it for sale.</div>
         </div>`;
       return;
     }
 
     if (!state.listing) {
       el.innerHTML = `
-        <div class="rs-label" style="margin-bottom:10px;">List "${escapeHtml(state.selected.title)}"</div>
+        <div class="rs-listing">
+          <img class="rs-listing-thumb" src="${escapeHtml(displayImageUrl(state.selected.imageURI))}" alt="">
+          <div class="rs-listing-meta">
+            <strong>${escapeHtml(state.selected.title)}</strong>
+            <span>${escapeHtml(state.selected.artist)}</span>
+          </div>
+        </div>
         <div class="rs-price-row">
           <div class="rs-field">
             <label for="priceInput">Asking price (HKD)</label>
-            <input type="number" class="input-field" id="priceInput" min="1" step="1" value="${state.price}">
+            <input type="number" class="input-field" id="priceInput" min="1" step="1" inputmode="numeric" value="${state.price}">
           </div>
-          <button class="btn-primary" id="listBtn" style="width:auto;margin:0;padding:12px 18px;">Show code</button>
+          <button class="btn-primary" id="listBtn">Show payment code</button>
         </div>`;
       $('listBtn').addEventListener('click', () => {
         const input = $('priceInput');
@@ -501,11 +624,11 @@
     }
 
     el.innerHTML = `
-      <div class="rs-label" style="margin-bottom:10px;">Listed &mdash; save this and send it to the buyer</div>
+      <div class="rs-label">Listed &mdash; save this and send it to the buyer</div>
 
       <div class="rs-compare">
         <figure class="rs-compare-item">
-          <div class="rs-compare-art" style="background:${state.selected.art}"></div>
+          <img class="rs-compare-art" src="${escapeHtml(displayImageUrl(state.selected.imageURI))}" alt="${escapeHtml(state.selected.title)}">
           <figcaption>Artwork</figcaption>
         </figure>
         <div class="rs-compare-arrow" aria-hidden="true">
@@ -529,14 +652,14 @@
 
       <div class="rs-scanstate" id="scanState"></div>
 
-      <button class="btn-primary" id="saveQrBtn" style="margin-top:14px;">Save payment code</button>
+      <button class="btn-primary" id="saveQrBtn">Save payment code</button>
 
-      <p class="rs-hint" style="margin-top:12px;">
+      <p class="rs-hint">
         Saves a PNG. Open Collector Bob Wallet from the portal and load that file there.
         If the badge above is red the code will not decode &mdash; lighten the
         background before saving.
       </p>
-      <p class="rs-hint" style="margin-top:8px;">
+      <p class="rs-hint">
         HK$ ${fmt(state.price)} for ${escapeHtml(state.selected.title)} (${escapeHtml(state.selected.id)}),
         token ${shorten(state.selected.erc721)}.
       </p>`;
@@ -612,7 +735,7 @@
       }
       el.innerHTML = `
         <div class="rs-listing">
-          <div class="rs-listing-thumb" style="background:${done.art}"></div>
+          <img class="rs-listing-thumb" src="${escapeHtml(displayImageUrl(done.imageURI))}" alt="">
           <div class="rs-listing-meta">
             <strong>${escapeHtml(done.title)}</strong>
             <span>${escapeHtml(done.id)} &middot; ${shorten(done.erc721)}</span>
@@ -627,7 +750,7 @@
         </div>
         <div class="rs-done">${CHECK}<span>Collector Bob now owns ${escapeHtml(done.title)}.</span></div>
         <p class="rs-hint">Transaction: <code>${escapeHtml(state.txHash || '')}</code></p>
-        <button class="btn-primary" id="nextBtn" style="margin:0;">Done</button>`;
+        <button class="btn-primary" id="nextBtn">Done</button>`;
       $('nextBtn').addEventListener('click', () => {
         state.scanned = null; state.stage = 'idle'; state.txHash = null;
         renderBuyer();
@@ -646,10 +769,9 @@
           <input type="file" id="qrFile" accept="image/png,image/jpeg" hidden>
         </label>
         <div class="rs-scanstate" id="loadState" hidden></div>
-        <p class="rs-hint" style="margin-top:12px;">
-          Stands in for the wallet's camera scanner, which already exists
-          (<code>startCameraScan</code> in index.html). The file is decoded here
-          in the browser; nothing is uploaded anywhere.
+        <p class="rs-hint">
+          Stands in for the wallet's camera scanner. The file is decoded here in
+          the browser; nothing is uploaded anywhere.
         </p>`;
       $('qrFile').addEventListener('change', e => {
         const f = e.target.files && e.target.files[0];
@@ -669,7 +791,7 @@
 
     el.innerHTML = `
       <div class="rs-listing">
-        <div class="rs-listing-thumb" style="background:${p.art}"></div>
+        <img class="rs-listing-thumb" src="${escapeHtml(displayImageUrl(p.imageURI))}" alt="">
         <div class="rs-listing-meta">
           <strong>${escapeHtml(p.title)}</strong>
           <span>${escapeHtml(p.id)} &middot; ${shorten(p.erc721)}</span>
@@ -700,7 +822,7 @@
         ${step(3, 'Buyer owns the piece', 'It appears in their ERC-721 folder', false)}
       </div>
 
-      <button class="btn-primary" id="payBtn" style="margin:0;" ${state.stage === 'transferring' ? 'disabled' : ''}>
+      <button class="btn-primary" id="payBtn" ${state.stage === 'transferring' ? 'disabled' : ''}>
         ${paid ? 'Notify registry' : 'Pay HK$ ' + fmt(Number(state.scanned.amount))}
       </button>`;
 
@@ -824,6 +946,46 @@
     }
   }
 
+  /** Send an ERC-721 ID Token from Collector Bob back to Artist Alice. No payment is involved. */
+  async function returnToArtist(p) {
+    if (state.returning) return;
+    const alice = state.accounts.alice;
+    const bob = state.accounts.bob;
+    // the contract rejects these anyway; say why before spending a transaction
+    const problem = !isConnected('alice') || !alice
+      ? 'Unlock Artist Alice Wallet on the portal first — the token is sent to her ICCHSM address.'
+      : !alice.registered || !alice.listed ? 'Artist Alice must be a registered, listed collector to receive the token.'
+      : !bob || !bob.listed ? 'Collector Bob must be listed to send the token.'
+      : !p.listed ? 'This artwork is unlisted. List it in the registry before returning it.'
+      : null;
+    if (problem) {
+      showChainStatus(problem, 'error');
+      return;
+    }
+    state.returning = p.erc721;
+    renderBobFolder();
+    let txHash = null;
+    try {
+      const result = await ArtIDChain.transfer(p.erc721, 'bob', 'alice');
+      txHash = result.txHash;
+      const receipt = await ArtIDChain.waitForReceipt(txHash, () => {
+        showChainStatus('Return transfer submitted—waiting for a qBESU block. Blocks may take about a minute.', 'pending', txHash);
+      });
+      if (receipt.status !== 'confirmed') throw new Error('qBESU returned a failed transaction receipt.');
+      await refreshChainState();
+      const current = piece(p.id);
+      if (!current || current.owner.toLowerCase() !== ADDR.alice.toLowerCase()) {
+        throw new Error('The receipt succeeded but the ownership read did not show Artist Alice as owner.');
+      }
+      showChainStatus(p.title + ' returned to Artist Alice.', 'success', txHash);
+    } catch (error) {
+      showChainStatus(error.message, 'error', txHash);
+    } finally {
+      state.returning = null;
+      renderBobFolder();
+    }
+  }
+
   /* ---------------- registry ---------------- */
 
   function renderRegistry() {
@@ -834,16 +996,16 @@
         const ownerProfile = profileForAddress(p.owner);
         return `
           <tr class="${p.listed ? '' : 'is-unlisted-row'}">
-            <td class="rs-reg-art">
+            <td class="rs-reg-cell"><div class="rs-reg-art">
               <img class="rs-reg-thumb" src="${escapeHtml(displayImageUrl(p.imageURI))}" alt="${escapeHtml(p.title)}" loading="lazy">
               <span><b>${escapeHtml(p.title)}</b><em>${escapeHtml(p.artist)}</em><em>${escapeHtml(p.artworkId)}</em><em>Creator: ${escapeHtml(p.creator)}</em><em title="${escapeHtml(p.contentHash)}">Content hash: ${escapeHtml(shorten(p.contentHash))}</em></span>
-            </td>
-            <td>${escapeHtml(p.erc721)} · token #1</td>
-            <td>${transactionLink(p.creationTxHash, escapeHtml(p.did))}</td>
-            <td><span class="rs-owner">${escapeHtml(ownerLabel(p.owner))}</span><em>${transactionLink(p.transferTxHash, 'Latest transfer')}</em></td>
-            <td>${p.listed ? 'Listed' : 'Unlisted'}</td>
-            <td><button class="rs-topbtn" data-artwork-listing="${escapeHtml(p.erc721)}" ${ownerProfile && isConnected(ownerProfile) && state.accounts[ownerProfile].registered && state.accounts[ownerProfile].listed && state.listingUpdating !== p.erc721 ? '' : 'disabled'}>${p.listed ? 'Unlist' : 'List'}</button></td>
-            <td>${transactionLink(p.listingTxHash || p.creationTxHash)}</td>
+            </div></td>
+            <td data-label="ID Token">${escapeHtml(p.erc721)} · token #1</td>
+            <td data-label="Artwork DID">${transactionLink(p.creationTxHash, escapeHtml(p.did))}</td>
+            <td data-label="Owner"><span><span class="rs-owner ${ownerProfile || ''}">${escapeHtml(ownerLabel(p.owner))}</span><em>${transactionLink(p.transferTxHash, 'Latest transfer')}</em></span></td>
+            <td data-label="Listing">${p.listed ? 'Listed' : 'Unlisted'}</td>
+            <td data-label="Action"><button class="rs-topbtn" data-artwork-listing="${escapeHtml(p.erc721)}" ${ownerProfile && isConnected(ownerProfile) && state.accounts[ownerProfile].registered && state.accounts[ownerProfile].listed && state.listingUpdating !== p.erc721 ? '' : 'disabled'}>${p.listed ? 'Unlist' : 'List'}</button></td>
+            <td data-label="Transaction">${transactionLink(p.listingTxHash || p.creationTxHash)}</td>
           </tr>`;
       }).join('');
     }
@@ -856,12 +1018,12 @@
         const latestMetadata = collector.metadataHistory[collector.metadataHistory.length - 1];
         return `
           <tr class="${collector.listed ? '' : 'is-unlisted-row'}">
-            <td><b>${escapeHtml(collector.displayName)}</b>${latestMetadata && latestMetadata.metadataURI ? `<em>${escapeHtml(latestMetadata.metadataURI)}</em>` : ''}</td>
-            <td>${escapeHtml(collector.address)}</td>
-            <td>${transactionLink(collector.registrationTxHash, escapeHtml(collector.did))}</td>
-            <td>${collector.listed ? 'Listed' : 'Unlisted'}</td>
-            <td><button class="rs-topbtn" data-collector-listing="${escapeHtml(collector.address)}" ${profile && isConnected(profile) ? '' : 'disabled'}>${collector.listed ? 'Unlist' : 'List'}</button></td>
-            <td>${transactionLink(collector.listingTxHash || (latestMetadata && latestMetadata.transactionHash) || collector.registrationTxHash)}</td>
+            <td class="rs-reg-cell"><b>${escapeHtml(collector.displayName)}</b>${latestMetadata && latestMetadata.metadataURI ? `<em>${escapeHtml(latestMetadata.metadataURI)}</em>` : ''}</td>
+            <td data-label="EOA">${escapeHtml(collector.address)}</td>
+            <td data-label="Collector DID">${transactionLink(collector.registrationTxHash, escapeHtml(collector.did))}</td>
+            <td data-label="Listing">${collector.listed ? 'Listed' : 'Unlisted'}</td>
+            <td data-label="Action"><button class="rs-topbtn" data-collector-listing="${escapeHtml(collector.address)}" ${profile && isConnected(profile) ? '' : 'disabled'}>${collector.listed ? 'Unlist' : 'List'}</button></td>
+            <td data-label="Transaction">${transactionLink(collector.listingTxHash || (latestMetadata && latestMetadata.transactionHash) || collector.registrationTxHash)}</td>
           </tr>`;
       }).join('');
     }
@@ -893,9 +1055,9 @@
       return;
     }
     body.innerHTML = state.ledger.map(r => `
-      <tr><td>${escapeHtml(r.time)}</td><td>${shorten(r.artwork)}</td>
-        <td>${shorten(r.from)}</td><td>${shorten(r.to)}</td>
-        <td>ERC-721</td><td>${escapeHtml(r.transactionHash)}</td></tr>`).join('');
+      <tr><td data-label="Time">${escapeHtml(r.time)}</td><td data-label="Piece">${shorten(r.artwork)}</td>
+        <td data-label="From">${shorten(r.from)}</td><td data-label="To">${shorten(r.to)}</td>
+        <td data-label="Channel">ERC-721</td><td data-label="Reference">${escapeHtml(r.transactionHash)}</td></tr>`).join('');
   }
 
   /* ---------------- boot ---------------- */
@@ -992,17 +1154,40 @@
     if (state.view === 'alice') { renderCollection(); renderSellerListing(); }
     if (state.view === 'bob') { renderBobFolder(); renderBuyer(); }
     if (state.view === 'registry') { renderRegistry(); renderLedger(); }
+    setSyncState('live');
   }
 
-  async function refreshPublicRegistry(returnToPortalOnSuccess) {
+  /* The registry hub on the portal and the registry header share these readouts. */
+  function setSyncState(status) {
+    const labels = {
+      syncing: 'Syncing over Astron…',
+      live: 'Live cross-border sync',
+      error: 'Sync interrupted'
+    };
+    document.querySelectorAll('.rs-sync-live').forEach(el => {
+      el.classList.toggle('is-syncing', status === 'syncing');
+      el.classList.toggle('is-error', status === 'error');
+      el.querySelector('[data-sync="state"]').textContent = labels[status];
+    });
+    if (status !== 'live') return;
+    const values = {
+      artworks: state.artworks.length,
+      collectors: state.collectors.length,
+      time: new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    };
+    document.querySelectorAll('dd[data-sync]').forEach(el => { el.textContent = values[el.dataset.sync]; });
+  }
+
+  async function refreshPublicRegistry() {
     const button = $('refreshChainBtn');
     button.disabled = true;
+    setSyncState('syncing');
     showChainStatus('Loading public registry data from qBESU.', 'pending');
     try {
       await refreshChainState();
       showChainStatus('Public registry data loaded from qBESU.', 'success');
-      if (returnToPortalOnSuccess) showView('portal');
     } catch (error) {
+      setSyncState('error');
       showChainStatus('Could not load public registry data: ' + error.message, 'error');
     } finally {
       button.disabled = false;
@@ -1039,6 +1224,7 @@
       ? account.listed ? 'Listed' : 'Unlisted'
       : 'Not registered';
     $(profile + 'ListingStatus').classList.toggle('is-unlisted-label', account.registered && !account.listed);
+    $(profile + 'ListingStatus').classList.toggle('is-unregistered', !account.registered);
     toggle.hidden = !account.registered;
     toggle.disabled = Boolean(state.collectorRegistering);
     toggle.textContent = account.listed ? 'Unlist collector' : 'List collector';
@@ -1258,11 +1444,10 @@
     $('bobSaveMetadata').addEventListener('click', () => updateCollector('bob'));
     $('createArtworkBtn').addEventListener('click', createArtwork);
     $('previewArtworkBtn').addEventListener('click', previewArtwork);
-    $('refreshChainBtn').addEventListener('click', refreshPublicRegistry);
+    $('refreshChainBtn').addEventListener('click', () => refreshPublicRegistry());
 
     reset();
-    showView('registry');
-    refreshPublicRegistry(true);
+    refreshPublicRegistry();
   });
 </script>
 
