@@ -350,8 +350,12 @@
       </header>
 
       <section class="rs-section">
-        <div class="rs-section-head">
+        <div class="rs-section-head rs-section-head-row">
           <h2>Artworks <span class="rs-count" id="artworkCount"></span></h2>
+          <button class="rs-switch" id="hideUnlistedToggle" type="button" role="switch" aria-checked="true" hidden>
+            <span class="rs-switch-track" aria-hidden="true"><span></span></span>
+            <span>Hide unlisted <span class="rs-count" id="unlistedCount"></span></span>
+          </button>
         </div>
         <div class="rs-gallery" id="registryBody"></div>
       </section>
@@ -404,7 +408,8 @@
     scanned: null,
     channel: 'chain',
     stage: 'idle',        // idle | scanned | paid | transferred
-    ledger: []
+    ledger: [],
+    hideUnlisted: true    // registry view preference, restored on load
   };
 
   const $ = id => document.getElementById(id);
@@ -1057,13 +1062,37 @@
 
   /* ---------------- registry ---------------- */
 
+  /* Re-registering a work after an edit leaves the old record unlisted, so
+     the registry can hide unlisted records to avoid showing the same painting
+     twice. A per-viewer preference, on by default. */
+  const HIDE_UNLISTED_KEY = 'artid.hideUnlisted';
+
+  function readHideUnlisted() {
+    try { return localStorage.getItem(HIDE_UNLISTED_KEY) !== 'false'; } catch (error) { return true; }
+  }
+
+  function setHideUnlisted(hide) {
+    state.hideUnlisted = hide;
+    try { localStorage.setItem(HIDE_UNLISTED_KEY, String(hide)); } catch (error) { /* preference just won't persist */ }
+    renderRegistry();
+  }
+
   function renderRegistry() {
-    $('artworkCount').textContent = state.artworks.length || '';
+    const unlisted = state.artworks.filter(p => !p.listed).length;
+    const shown = state.hideUnlisted ? state.artworks.filter(p => p.listed) : state.artworks;
+    const toggle = $('hideUnlistedToggle');
+    toggle.hidden = !unlisted;
+    toggle.setAttribute('aria-checked', String(state.hideUnlisted));
+    $('unlistedCount').textContent = unlisted ? '(' + unlisted + ')' : '';
+    $('artworkCount').textContent = shown.length || '';
     $('collectorCount').textContent = state.collectors.length || '';
     if (!state.artworks.length) {
       $('registryBody').innerHTML = emptyState('No artworks are registered yet.');
+    } else if (!shown.length) {
+      $('registryBody').innerHTML = emptyState((unlisted === 1 ? 'The only artwork is unlisted.' : 'All ' + unlisted + ' artworks are unlisted.') +
+        ' Turn off <b>Hide unlisted</b> to see ' + (unlisted === 1 ? 'it.' : 'them.'));
     } else {
-      $('registryBody').innerHTML = state.artworks.map(p => {
+      $('registryBody').innerHTML = shown.map(p => {
         const ownerProfile = profileForAddress(p.owner);
         const canToggle = ownerProfile && isConnected(ownerProfile) && state.accounts[ownerProfile].registered &&
           state.accounts[ownerProfile].listed && state.listingUpdating !== p.erc721;
@@ -1596,6 +1625,8 @@
     $('createArtworkBtn').addEventListener('click', createArtwork);
     $('previewArtworkBtn').addEventListener('click', previewArtwork);
     $('refreshChainBtn').addEventListener('click', refreshPublicRegistry);
+    state.hideUnlisted = readHideUnlisted();
+    $('hideUnlistedToggle').addEventListener('click', () => setHideUnlisted(!state.hideUnlisted));
 
     reset();
     showView('registry');
